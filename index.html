@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                      "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+	<title>All I want is a million bucks.</title>
+	<link
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="site.css">
+	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+    </head>
+
+    <body>
+	<script type="text/javascript">
+	    var dataArray = new Array();
+	    function refreshData() {
+		dataArray = new Array();
+		var raw = $("#data").val();
+		var lines = raw.split("\n");
+		for (i in lines) {
+		    if (lines[i]) {
+			var lineData = lines[i].split("     ");
+			if (lineData.length == 4) {
+			    dataArray[dataArray.length] = {    'date':lineData[0],
+							       'type':lineData[1],
+							   'location':lineData[2],
+								'sum':lineData[3]};
+			}
+		    }
+		}
+	    }
+	    function doThePan() {
+		refreshData();
+		$('#content').animate({
+		    'width': '900px'
+		 }, 700, function() {
+		    $('#lines').css('display', 'none');
+		    $('#links').css('display', 'block');
+		 });
+	    }
+	    function showTop() {
+		var newMargin = $(window).height() - ($('#content').height() + 32);
+		    $('#content').css('border-right', 'solid 1px black');
+		$('#content').animate({
+		    'margin-top': newMargin + 'px',
+		    'margin-right': '50px'
+		 }, 700, function() {
+		    $('#content').css('border-bottom', '0');
+		    $('#links').css('display', 'none');
+		    $('#graph').css('display', 'block');
+		 });
+
+		var tulot = 0;
+		var menot = 0;
+		for (i in dataArray) {
+		    var sign = dataArray[i].sum.substring(dataArray[i].sum.length - 1);
+		    var sum = dataArray[i].sum.substring(0, dataArray[i].sum.length - 2);
+		    if (sign == '-') {
+			menot += parseFloat(sum.replace(".", "").replace(",", "."));
+		    } else {
+			tulot += parseFloat(sum.replace(".", "").replace(",", "."));
+		    }
+		}
+		$('#tulot').html(tulot.toFixed(2));
+		$('#menot').html(menot.toFixed(2));
+	    }
+	    function showForm() {
+		$('#content').animate({
+		    'width': '450px'
+		 }, 700, function() {
+		    $('#links').css('display', 'none');
+		    $('#lines').css('display', 'block');
+		 });
+	    }
+	    function showMenu() {
+		$('#content').css('border-bottom', 'solid 1px black');
+		$('#content').animate({
+		    'margin-top': '100px',
+		    'margin-right': '0'
+		 }, 700, function() {
+		    $('#content').css('border-right', '0');
+		    $('#graph').css('display', 'none');
+		    $('#links').css('display', 'block');
+		 });
+	    }
+	</script>
+	<div id="bg"><img src="IMG_0182.JPG" alt=""></div>
+
+	<div id="content">
+	    <form id="lines">
+		<label>kopioi t&#228;h&#228;n kaikki tilitapahtumat verkkopankista</label><br />
+		<textarea id="data" rows="40" cols="60"></textarea>
+	    	<br />
+		<button onclick="doThePan();return false;">valmis</button>
+	    </form>
+	    <div id="links" style="display: none;">
+		<p><a href="#" onclick="showTop();return false;">eka</a></p>
+		<p><a href="#" onclick="showTop();return false;">toka</a></p>
+		<p><a href="#" onclick="showTop();return false;">kolmas</a></p>
+		<p class="back"><a href="#" onclick="showForm();return false;">korjaa tietoja</a></p>
+	    </div>
+	    <div id="graph" style="display: none;">
+		t&#228;ss&#228; olis se kuva.
+	
+		<p>
+		    Tulot yhteens&#228;: <span id="tulot"></span><br>
+		    Menot yhteens&#228;: <span id="menot"></span>
+		</p>
+
+		<p class="back"><a href="#" onclick="showMenu();return false;">takaisin</a></p>
+	    </div>
+	</div>
+    </body>
+</html>
+
