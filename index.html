@@ -7,6 +7,7 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<link rel="stylesheet" type="text/css" href="site.css">
 	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" src="google-jsapi.js"></script>
     </head>
 
     <body>
@@ -30,6 +31,20 @@
 	    }
 	    function doThePan() {
 		refreshData();
+		var tulot = 0;
+		var menot = 0;
+		for (i in dataArray) {
+		    var sign = dataArray[i].sum.substring(dataArray[i].sum.length - 1);
+		    var sum = dataArray[i].sum.substring(0, dataArray[i].sum.length - 2);
+		    if (sign == '-') {
+			menot += parseFloat(sum.replace(".", "").replace(",", "."));
+		    } else {
+			tulot += parseFloat(sum.replace(".", "").replace(",", "."));
+		    }
+		}
+		$('#tulot').html(tulot.toFixed(2));
+		$('#menot').html(menot.toFixed(2));
+
 		$('#content').animate({
 		    'width': '900px'
 		 }, 700, function() {
@@ -49,19 +64,6 @@
 		    $('#graph').css('display', 'block');
 		 });
 
-		var tulot = 0;
-		var menot = 0;
-		for (i in dataArray) {
-		    var sign = dataArray[i].sum.substring(dataArray[i].sum.length - 1);
-		    var sum = dataArray[i].sum.substring(0, dataArray[i].sum.length - 2);
-		    if (sign == '-') {
-			menot += parseFloat(sum.replace(".", "").replace(",", "."));
-		    } else {
-			tulot += parseFloat(sum.replace(".", "").replace(",", "."));
-		    }
-		}
-		$('#tulot').html(tulot.toFixed(2));
-		$('#menot').html(menot.toFixed(2));
 	    }
 	    function showForm() {
 		$('#content').animate({
@@ -93,6 +95,10 @@
 		<button onclick="doThePan();return false;">valmis</button>
 	    </form>
 	    <div id="links" style="display: none;">
+		<p>
+		    Tulot yhteens&#228;: <span id="tulot"></span><br>
+		    Menot yhteens&#228;: <span id="menot"></span>
+		</p>
 		<p><a href="#" onclick="showTop();return false;">eka</a></p>
 		<p><a href="#" onclick="showTop();return false;">toka</a></p>
 		<p><a href="#" onclick="showTop();return false;">kolmas</a></p>
@@ -100,11 +106,32 @@
 	    </div>
 	    <div id="graph" style="display: none;">
 		t&#228;ss&#228; olis se kuva.
+
+		<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Year');
+        data.addColumn('number', 'Sales');
+        data.addColumn('number', 'Expenses');
+        data.addRows([
+          ['2004', 1000, 400],
+          ['2005', 1170, 460],
+          ['2006', 660, 1120],
+          ['2007', 1030, 540]
+        ]);
+
+        var options = {
+          title: 'Company Performance',
+          hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script><div id="chart_div" style="width: 900px; height: 500px;"></div>
 	
-		<p>
-		    Tulot yhteens&#228;: <span id="tulot"></span><br>
-		    Menot yhteens&#228;: <span id="menot"></span>
-		</p>
 
 		<p class="back"><a href="#" onclick="showMenu();return false;">takaisin</a></p>
 	    </div>
