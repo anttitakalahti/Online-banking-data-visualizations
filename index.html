@@ -53,6 +53,8 @@
 		 });
 	    }
 	    function showTop() {
+		drawChart();
+
 		var newMargin = $(window).height() - ($('#content').height() + 32);
 		    $('#content').css('border-right', 'solid 1px black');
 		$('#content').animate({
@@ -84,6 +86,21 @@
 		    $('#links').css('display', 'block');
 		 });
 	    }
+
+	    function round(n, dec) {
+		n = parseFloat(n);
+		if (!isNaN(n)){
+		    if(!dec) var dec = 0;
+		    var factor= Math.pow(10, dec);
+		    return Math.floor(n * factor + ((n * factor * 10) %10 >= 5?1:0)) /factor;
+		} else {
+		    return n;
+		}
+	    }
+
+	    $(document).ready( function(){
+		$('#data').focus();
+	    });
 	</script>
 	<div id="bg"><img src="IMG_0182.JPG" alt=""></div>
 
@@ -99,41 +116,52 @@
 		    Tulot yhteens&#228;: <span id="tulot"></span><br>
 		    Menot yhteens&#228;: <span id="menot"></span>
 		</p>
-		<p><a href="#" onclick="showTop();return false;">eka</a></p>
-		<p><a href="#" onclick="showTop();return false;">toka</a></p>
-		<p><a href="#" onclick="showTop();return false;">kolmas</a></p>
+		<p><a href="#" onclick="showTop();return false;">n&#228;yt&#228; menojen kertyminen</a></p>
 		<p class="back"><a href="#" onclick="showForm();return false;">korjaa tietoja</a></p>
 	    </div>
 	    <div id="graph" style="display: none;">
-		t&#228;ss&#228; olis se kuva.
-
 		<script type="text/javascript">
-      google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Year');
-        data.addColumn('number', 'Sales');
-        data.addColumn('number', 'Expenses');
-        data.addRows([
-          ['2004', 1000, 400],
-          ['2005', 1170, 460],
-          ['2006', 660, 1120],
-          ['2007', 1030, 540]
-        ]);
+		    google.load("visualization", "1", {packages:["corechart"]});
+		    google.setOnLoadCallback(drawChart);
+		    function drawChart() {
+			var barData = new google.visualization.DataTable();
+			barData.addColumn('string', 'pvm');
+			barData.addColumn('number', 'menot');
 
-        var options = {
-          title: 'Company Performance',
-          hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
-        };
+			var dateString = '';
+			var dailyExpensesTotal = 0.00;
+			var allExpensesTotal = 0;
+			for (i in dataArray.reverse()) {
+			    if (dataArray[i].sum.substring(dataArray[i].sum.length - 1) == '+') { continue; }
+			    if (dateString != dataArray[i].date.split("\.")[0]) {
+				allExpensesTotal += dailyExpensesTotal;
+				if (dateString != '') { barData.addRow([dateString + ".", round(allExpensesTotal, 2)]); }
+				
+				dateString = dataArray[i].date.split("\.")[0];
+				dailyExpensesTotal = 0;
+			    }
+			    
+			    dailyExpensesTotal += parseFloat(dataArray[i].sum.substring(0, dataArray[i].sum.length - 2).replace(".", "").replace(",", "."));
+			}
+			if (dateString != '') { barData.addRow([dateString + ".", round((dailyExpensesTotal + allExpensesTotal), 2)]); }
+			dataArray.reverse();
 
-        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
-        chart.draw(data, options);
-      }
-    </script><div id="chart_div" style="width: 900px; height: 500px;"></div>
+			var barOptions = {
+			    title: 'Menot',
+			    hAxis: {title: 'pvm', titleTextStyle: {color: 'red'}},
+			    width:800,
+			    height: 500
+			};
+
+			var barChart = new google.visualization.ColumnChart(document.getElementById('bar_chart_div'));
+			barChart.draw(barData, barOptions);
+		    }
+    
+		</script>
+		<div id="bar_chart_div" style="width: 900px; height: 500px;"></div>
 	
 
-		<p class="back"><a href="#" onclick="showMenu();return false;">takaisin</a></p>
+		<p class="back_from_bar_chart"><a href="#" onclick="showMenu();return false;">takaisin</a></p>
 	    </div>
 	</div>
     </body>
