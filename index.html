@@ -131,24 +131,32 @@
 			var dateString = '';
 			var dailyExpensesTotal = 0.00;
 			var allExpensesTotal = 0;
+			var dailyExpensesString = '';
 			for (i in dataArray.reverse()) {
 			    if (dataArray[i].sum.substring(dataArray[i].sum.length - 1) == '+') { continue; }
 			    if (dateString != dataArray[i].date.split("\.")[0]) {
 				allExpensesTotal += dailyExpensesTotal;
-				if (dateString != '') { barData.addRow([dateString + ".", round(allExpensesTotal, 2)]); }
+				if (dateString != '') { barData.addRow([dateString + ".", {f: "yhteens" + String.fromCharCode(228) + ": " + round(dailyExpensesTotal, 2) + "\n" + dailyExpensesString, v: round(allExpensesTotal, 2)}]); }
 				
 				dateString = dataArray[i].date.split("\.")[0];
 				dailyExpensesTotal = 0;
+				dailyExpensesString = '';
+
 			    }
 			    
 			    dailyExpensesTotal += parseFloat(dataArray[i].sum.substring(0, dataArray[i].sum.length - 2).replace(".", "").replace(",", "."));
+			    if (dataArray[i].type == 'Oma siirto') {
+				dailyExpensesString += dataArray[i].type + " " + dataArray[i].sum + "\n";
+			    } else {
+				dailyExpensesString += dataArray[i].location + " " + dataArray[i].sum + "\n";
+			    }
 			}
 			if (dateString != '') { barData.addRow([dateString + ".", round((dailyExpensesTotal + allExpensesTotal), 2)]); }
 			dataArray.reverse();
 
 			var barOptions = {
 			    title: 'Menot',
-			    hAxis: {title: 'pvm', titleTextStyle: {color: 'red'}},
+			    hAxis: {title: 'p' + String.fromCharCode(228) + 'iv' + String.fromCharCode(228), titleTextStyle: {color: 'red'}},
 			    width:800,
 			    height: 500
 			};
