@@ -21,6 +21,7 @@
 		    if (lines[i]) {
 			var lineData = lines[i].split("     ");
 			if (lineData.length == 4) {
+			    if (lineData[1] == 'Oma siirto') { continue; }
 			    dataArray[dataArray.length] = {    'date':lineData[0],
 							       'type':lineData[1],
 							   'location':lineData[2],
@@ -151,12 +152,13 @@
 				dailyExpensesString += dataArray[i].location + " " + dataArray[i].sum + "\n";
 			    }
 			}
-			if (dateString != '') { barData.addRow([dateString + ".", round((dailyExpensesTotal + allExpensesTotal), 2)]); }
+			if (dateString != '') { barData.addRow([dateString + ".", {f: "yhteens" + String.fromCharCode(228) + ": " + round(dailyExpensesTotal, 2) + "\n" + dailyExpensesString, v: round((dailyExpensesTotal + allExpensesTotal), 2)}]); }
 			dataArray.reverse();
 
 			var barOptions = {
 			    title: 'Menot',
 			    hAxis: {title: 'p' + String.fromCharCode(228) + 'iv' + String.fromCharCode(228), titleTextStyle: {color: 'red'}},
+			    vAxis: {minValue: 0},
 			    width:800,
 			    height: 500
 			};
