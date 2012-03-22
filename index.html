@@ -13,6 +13,14 @@
     <body>
 	<script type="text/javascript">
 	    var dataArray = new Array();
+
+	    function printSum(sum) {
+		sum = sum + "";
+		var cents = sum.substring(sum.length - 2);
+		var euros = sum.substring(0, sum.length - 2);
+		return euros + "," + cents;
+	    }
+
 	    function refreshData() {
 		dataArray = new Array();
 		var raw = $("#data").val();
@@ -22,29 +30,39 @@
 			var lineData = lines[i].split("     ");
 			if (lineData.length == 4) {
 			    if (lineData[1] == 'Oma siirto') { continue; }
-			    dataArray[dataArray.length] = {    'date':lineData[0],
+			
+
+			    var sign = lineData[3].substring(lineData[3].length - 1);
+			    var sum = lineData[3].substring(0, lineData[3].length - 1);
+			    sum = sum.replace(".", "").replace(",", "");
+			    sum = parseInt(sum);
+
+			    dateArray = lineData[0].split(".");
+
+			    // new Date(year, month, day, hours, minutes, seconds, milliseconds);
+			    dataArray[dataArray.length] = {    'date':new Date(dateArray[2], parseInt(dateArray[1]) - 1, dateArray[0], 0, 0, 0, 0),
 							       'type':lineData[1],
 							   'location':lineData[2],
-								'sum':lineData[3]};
+								'sum':sum,
+							       'sign':sign};
 			}
 		    }
 		}
+		dataArray = dataArray.sort( function(a, b) { return a.date-b.date; });
 	    }
 	    function doThePan() {
 		refreshData();
 		var tulot = 0;
 		var menot = 0;
 		for (i in dataArray) {
-		    var sign = dataArray[i].sum.substring(dataArray[i].sum.length - 1);
-		    var sum = dataArray[i].sum.substring(0, dataArray[i].sum.length - 2);
-		    if (sign == '-') {
-			menot += parseFloat(sum.replace(".", "").replace(",", "."));
+		    if (dataArray[i].sign == '-') {
+			menot += dataArray[i].sum;
 		    } else {
-			tulot += parseFloat(sum.replace(".", "").replace(",", "."));
+			tulot += dataArray[i].sum;
 		    }
 		}
-		$('#tulot').html(tulot.toFixed(2));
-		$('#menot').html(menot.toFixed(2));
+		$('#tulot').html(printSum(tulot));
+		$('#menot').html(printSum(menot));
 
 		$('#content').animate({
 		    'width': '900px'
@@ -88,17 +106,6 @@
 		 });
 	    }
 
-	    function round(n, dec) {
-		n = parseFloat(n);
-		if (!isNaN(n)){
-		    if(!dec) var dec = 0;
-		    var factor= Math.pow(10, dec);
-		    return Math.floor(n * factor + ((n * factor * 10) %10 >= 5?1:0)) /factor;
-		} else {
-		    return n;
-		}
-	    }
-
 	    $(document).ready( function(){
 		$('#data').focus();
 	    });
@@ -133,33 +140,35 @@
 			var dailyExpensesTotal = 0.00;
 			var allExpensesTotal = 0;
 			var dailyExpensesString = '';
-			for (i in dataArray.reverse()) {
-			    if (dataArray[i].sum.substring(dataArray[i].sum.length - 1) == '+') { continue; }
-			    if (dateString != dataArray[i].date.split("\.")[0]) {
+			for (i in dataArray) {
+			    if (dataArray[i].sign == '+') { continue; }
+			    var day = "" + dataArray[i].date.getDate();
+			    if (dateString != day) {
 				allExpensesTotal += dailyExpensesTotal;
-				if (dateString != '') { barData.addRow([dateString + ".", {f: "yhteens" + String.fromCharCode(228) + ": " + round(dailyExpensesTotal, 2) + "\n" + dailyExpensesString, v: round(allExpensesTotal, 2)}]); }
+				if (dateString != '') { barData.addRow([dateString + ".", {f: "yhteens" + String.fromCharCode(228) + ": " + printSum(dailyExpensesTotal) + "\n" + dailyExpensesString, 
+											   v: allExpensesTotal / 100}]); }
 				
-				dateString = dataArray[i].date.split("\.")[0];
+				dateString = day;
 				dailyExpensesTotal = 0;
 				dailyExpensesString = '';
 
 			    }
 			    
-			    dailyExpensesTotal += parseFloat(dataArray[i].sum.substring(0, dataArray[i].sum.length - 2).replace(".", "").replace(",", "."));
-			    if (dataArray[i].type == 'Oma siirto') {
-				dailyExpensesString += dataArray[i].type + " " + dataArray[i].sum + "\n";
+			    dailyExpensesTotal += dataArray[i].sum;
+			    if (dataArray[i].location == '') {
+				dailyExpensesString += dataArray[i].type + " " + printSum(dataArray[i].sum) + "\n";
 			    } else {
-				dailyExpensesString += dataArray[i].location + " " + dataArray[i].sum + "\n";
+				dailyExpensesString += dataArray[i].location + " " + printSum(dataArray[i].sum) + "\n";
 			    }
 			}
-			if (dateString != '') { barData.addRow([dateString + ".", {f: "yhteens" + String.fromCharCode(228) + ": " + round(dailyExpensesTotal, 2) + "\n" + dailyExpensesString, v: round((dailyExpensesTotal + allExpensesTotal), 2)}]); }
-			dataArray.reverse();
+			if (dateString != '') { barData.addRow([dateString + ".", {f: "yhteens" + String.fromCharCode(228) + ": " + printSum(dailyExpensesTotal) + "\n" + dailyExpensesString, 
+										   v: (dailyExpensesTotal + allExpensesTotal) / 100}]); }
 
 			var barOptions = {
 			    title: 'Menot',
 			    hAxis: {title: 'p' + String.fromCharCode(228) + 'iv' + String.fromCharCode(228), titleTextStyle: {color: 'red'}},
 			    vAxis: {minValue: 0},
-			    width:800,
+			    width: 900,
 			    height: 500
 			};
 
