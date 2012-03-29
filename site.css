@@ -42,10 +42,13 @@ div#content {
 }
 
 #links {
-    height: 550px;
+    height: 330px;
 }
 
-.back {
-    position: relative;
-    bottom: -450px;
+#links table .sum {
+    text-align: right;
+}
+
+#links table .odd td {
+    background: lightgray;
 }
