@@ -24,7 +24,7 @@
 	    // this is called when the form is submitted.
 	    function refreshData() {
 		dataArray = new Array();
-		var raw = $("#data").val();
+		var raw = $("#data").val() + "\n";
 		var lines = raw.split("\n");
 		for (i in lines) {
 		    if (lines[i]) {
@@ -46,6 +46,8 @@
 							   'location':lineData[2],
 								'sum':sum,
 							       'sign':sign};
+			} else {
+			    alert("Fix this line please: " + lines[i]);
 			}
 		    }
 		}
