@@ -6,3 +6,10 @@ Please note that this is an early prototype and mainly uses stuff that I have.
 Thanks for being interested, 
 
 Antti
+
+## Running ##
+* npm install gulp
+* npm install gulp-sass
+* npm install gulp-watch
+* npm install del
+* gulp watch
