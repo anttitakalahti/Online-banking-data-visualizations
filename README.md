@@ -8,8 +8,6 @@ Thanks for being interested,
 Antti
 
 ## Running ##
-* npm install gulp
-* npm install gulp-sass
-* npm install gulp-watch
-* npm install del
+* npm install 
+* gulp sass
 * gulp watch
