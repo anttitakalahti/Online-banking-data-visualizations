@@ -2,8 +2,8 @@
                       "http://www.w3.org/TR/html4/loose.dtd">
 <html>
     <head>
-	<title>All I want is a million bucks.</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>All I want is a million bucks.</title>
 	<link rel="stylesheet" type="text/css" href="site.css">
 	<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
         <script type="text/javascript" src="google-jsapi.js"></script>
@@ -51,7 +51,7 @@
 			}
 		    }
 		}
-		dataArray = dataArray.sort( function(a, b) { return a.date-b.date; });
+		dataArray = dataArray.sort( function(a, b) { return a.date - b.date; });
 	    }
 
 	    // helper metho for addExpenseToLocale to group all the shops etc.
@@ -153,14 +153,15 @@
 
 <!-- Content lives here:                                                    -->
 
-	<div id="bg"><img src="IMG_0182.JPG" alt=""></div>
+	<div id="bg">
+	</div>
 
 	<div id="content">
 
 <!-- This is the form where data goes to get massaged.                      -->
 
 	    <form id="lines">
-		<label>kopioi t&#228;h&#228;n kaikki tilitapahtumat verkkopankista</label><br />
+		<label>kopioi t&#228;h&#228;n kaikki tilitapahtumat (Nordean) verkkopankista</label><br />
 		<textarea id="data" rows="40" cols="60"></textarea>
 	    	<br />
 		<button onclick="doThePan();return false;">valmis</button>
