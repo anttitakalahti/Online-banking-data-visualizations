@@ -1,13 +1,75 @@
 <!DOCTYPE html>
 <html>
     <head>
-	<meta charset="utf-8" />
+        <meta charset="utf-8" />
         <title>Online banking data visualizations</title>
-        <script data-main="scripts/main" src="scripts/require.js"></script>
         <link rel="stylesheet" href="css/site.css" type="text/css">
     </head>
     <body>
         <div id="container">
+            <div id="data-input">
+                <form name = "form-input" enctype="multipart/form-data">
+                  <input type="file" name="raw" id="input-file" />
+                </form>
+            </div>
+            <div id="data">
+            </div>
         </div>
+        <script>
+            const create_row = (index, element, data) => {
+                const tr = document.createElement("tr");
+                tr.id = "row_" + index;
+
+                const date = document.createElement(element);
+                date.id = "cell_" + index + "_date"
+                date.innerHTML = data[0];
+                tr.append(date);
+
+                const sum = document.createElement(element);
+                sum.id = "cell_" + index + "_sum"
+                sum.innerHTML = data[1];
+                tr.append(sum);
+
+                const event = document.createElement(element);
+                event.id = "cell_" + index + "_event"
+                event.innerHTML = data[3];
+                tr.append(event);
+
+                const recipient = document.createElement(element);
+                recipient.id = "cell_" + index + "_recipient"
+                recipient.innerHTML = data[4];
+                tr.append(recipient);
+
+                return tr;
+            }
+
+            const update_table = (new_data) => {
+                const rows = new_data
+                    .trim()
+                    .split("\n")
+                    .map(row => row.split("\t"));
+
+                const tbl = document.createElement("table");
+                tbl.id = "data-table"
+
+                const heading = rows.shift();
+                tbl.append(create_row(0, "th", heading));
+                tbl.append(...rows.map((row, i) => create_row(i, "td", row)));
+
+                document.getElementById("data").replaceChildren(tbl);
+            }
+
+            const input_file = document.getElementById("input-file");
+
+            const new_input = (event) => {
+                if (event.target.files) {
+                    const reader = new FileReader();
+                    reader.onload = () => update_table(reader.result);
+                    reader.readAsBinaryString(event.target.files[0]);
+                }
+            };
+
+            input_file.addEventListener("input", new_input);
+        </script>
     </body>
 </html>
